@@ -1,0 +1,18 @@
+url: https://biocompnet.github.io/Vcocena/
+template:
+  bootstrap: 5
+home:
+  title: "vcocena"
+  description: "Vertical CoCena2 multi-omics integration and clustering."
+reference:
+  - title: "Pipeline"
+    contents:
+      - run_vcocena
+  - title: "Plots"
+    contents:
+      - plot_cluster_heatmap_v2
+      - plot_circular_module_heatmap
+  - title: "Utilities"
+    contents:
+      - suggest_topvar
+      - vcocena_example

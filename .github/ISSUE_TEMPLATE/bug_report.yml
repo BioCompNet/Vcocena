@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a problem with vcocena
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Describe the bug and expected behavior.
+      placeholder: "When I call ..., I see ..."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+      description: Provide a minimal reproducible example.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: R version
+      placeholder: "R 4.3.x"
+  - type: input
+    attributes:
+      label: Operating system
+      placeholder: "macOS 14 / Ubuntu 22.04 / Windows 11"
+  - type: textarea
+    attributes:
+      label: Session info
+      description: Paste output of sessionInfo()
+      render: shell

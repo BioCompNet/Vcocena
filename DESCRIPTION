@@ -52,8 +52,11 @@ Imports:
     tidyverse,
     wesanderson
 Suggests:
+    covr,
     devtools,
     knitr,
+    pkgdown,
+    rcmdcheck,
     rmarkdown,
     testthat
 VignetteBuilder: knitr

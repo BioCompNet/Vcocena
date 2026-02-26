@@ -1,6 +1,8 @@
 # vcocena
 
 [![R-CMD-check](https://github.com/BioCompNet/Vcocena/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BioCompNet/Vcocena/actions/workflows/R-CMD-check.yaml)
+[![Codecov](https://codecov.io/gh/BioCompNet/Vcocena/branch/main/graph/badge.svg)](https://codecov.io/gh/BioCompNet/Vcocena)
+[![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue.svg)](https://biocompnet.github.io/Vcocena/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `vcocena` provides a packaged, runnable version of the Vertical CoCena2 multi‑omics pipeline, plus plotting helpers.
