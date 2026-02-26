@@ -1,0 +1,61 @@
+---
+title: "vcocena Quickstart"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vcocena Quickstart}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "#>")
+```
+
+## Overview
+
+This vignette shows how to run a minimal vCoCena pipeline using the bundled
+example dataset.
+
+## Example data
+
+```{r}
+library(vcocena)
+ex <- vcocena_example()
+```
+
+## Define layers and supplements
+
+```{r}
+layers <- list(
+  set1 = c(ex$counts_seq, ex$anno_seq),
+  set2 = c(ex$counts_array, ex$anno_array)
+)
+
+supplement <- c(
+  ex$tf,
+  ex$hallmark,
+  ex$go,
+  ex$kegg,
+  ex$reactome
+)
+
+layers_names <- c("sequencing", "microarray")
+```
+
+## Run the pipeline (lightweight settings)
+
+```{r eval=FALSE}
+out <- run_vcocena(
+  working_directory = ex$working_directory,
+  layers = layers,
+  supplement = supplement,
+  layers_names = layers_names,
+  save_folder = "out_v1",
+  layer_top_var = c(100, 100),
+  layer_min_corr = c(0.2, 0.2),
+  layer_range_cutoff_length = c(10, 10)
+)
+```
+
+The full pipeline can take time on real data. Start with small values and
+increase once the workflow is confirmed.

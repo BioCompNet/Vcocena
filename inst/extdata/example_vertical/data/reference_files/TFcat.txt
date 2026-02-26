@@ -1,0 +1,5 @@
+Taxon1	Taxon2	Type_of_gene
+TF001	HUMAN	TF
+TF002	HUMAN	TF
+TF003	HUMAN	TF
+

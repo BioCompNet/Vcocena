@@ -1,0 +1,10 @@
+ID	Condition	Donor	Sentrix	merged	technology
+a4676163030_C	IL4	BC11	4676163030	IL4_array	Microarray
+a4676163030_D	IFNg	BC11	4676163030	IFNg_array	Microarray
+a4676163030_A	baseline	BC11	4676163030	baseline_array	Microarray
+a4676163030_G	IL4	BC13	4676163030	IL4_array	Microarray
+a4676163030_H	IFNg	BC13	4676163030	IFNg_array	Microarray
+a4676163030_E	baseline	BC13	4676163030	baseline_array	Microarray
+a4676163025_H	IFNg	BC78	4676163025	IFNg_array	Microarray
+a4676163025_J	IL4	BC78	4676163025	IL4_array	Microarray
+a4950679045_C	baseline	BC78	4950679045	baseline_array	Microarray

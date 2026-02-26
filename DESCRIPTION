@@ -1,0 +1,60 @@
+Package: vcocena
+Title: Vertical CoCena2 Multi-Omics Integration and Clustering
+Version: 1.0.0
+Authors@R: 
+    person("s6aamani", "", email = "aakashvmantri@gmail.com", role = c("aut", "cre"))
+Description: Tools for running the vertical CoCena2 multi-omics pipeline,
+    including per-layer correlation analysis, network construction, clustering,
+    and integrated module visualization.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    biomaRt,
+    bnstruct,
+    BSgenome,
+    Cairo,
+    circlize,
+    cluster,
+    clusterProfiler,
+    combinat,
+    ComplexHeatmap,
+    cowplot,
+    dplyr,
+    enrichplot,
+    GenomicFeatures,
+    ggnetwork,
+    ggplot2,
+    ggsci,
+    httr,
+    igraph,
+    intergraph,
+    jsonlite,
+    lineup,
+    magrittr,
+    MCDA,
+    networkD3,
+    pheatmap,
+    plotly,
+    purrr,
+    qgraph,
+    RColorBrewer,
+    RCy3,
+    readr,
+    reshape2,
+    rlist,
+    scales,
+    STRINGdb,
+    stringi,
+    stringr,
+    tidyr,
+    tidyverse,
+    wesanderson
+Suggests:
+    devtools,
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+Config/testthat/edition: 3

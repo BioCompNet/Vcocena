@@ -1,0 +1,10 @@
+ID	Condition	Donor	merged	technology
+s_629	IFNg	BC9	IFNg_seq	RNA-seq
+s_784	IFNg	BC13	IFNg_seq	RNA-seq
+s_951	IFNg	BC78	IFNg_seq	RNA-seq
+s_626	IL4	BC9	IL4_seq	RNA-seq
+s_783	IL4	BC13	IL4_seq	RNA-seq
+s_957	IL4	BC78	IL4_seq	RNA-seq
+s_627	baseline	BC9	baseline_seq	RNA-seq
+s_781	baseline	BC13	baseline_seq	RNA-seq
+s_948	baseline	BC78	baseline_seq	RNA-seq
