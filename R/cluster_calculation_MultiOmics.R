@@ -240,10 +240,13 @@ cluster_calculation <- function(igraph,
                                                   case="test", iter=1))
     
     
-    cluster_algo_used= df_modularity_score %>%
-      dplyr::filter(modularity_score==max(modularity_score)) %>%
-      dplyr::select(cluster_algorithm) %>%
-      as.character()
+    cluster_algo_used <- df_modularity_score %>%
+      dplyr::filter(modularity_score == max(modularity_score)) %>%
+      dplyr::pull(cluster_algorithm)
+    if (length(cluster_algo_used) > 1) {
+      # Resolve ties deterministically using the original algorithm order
+      cluster_algo_used <- cluster_algo_list[cluster_algo_list %in% cluster_algo_used][1]
+    }
     if(!mute){
       print(paste(cluster_algo_used, " will be used based on your input (if not auto option was specified) or the highest modularity score "))
     }
