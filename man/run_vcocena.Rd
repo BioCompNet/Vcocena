@@ -28,7 +28,10 @@ run_vcocena(
   min_nodes_number_for_network = 40,
   data_in_log = FALSE,
   range_GFC = 3,
-  identicals_min_corr = 0.8
+  identicals_min_corr = 0.8,
+  cross_corr_threshold = NULL,
+  cross_corr_scan_n = 50,
+  cross_corr_scan_min = 0.8
 )
 }
 \arguments{
@@ -102,6 +105,16 @@ for rlog/VST/log2 data, otherwise Group Fold Changes will be wrong.}
 
 \item{identicals_min_corr}{Numeric; minimum cluster-to-cluster correlation
 for two clusters in different layers to be treated as "identical".}
+
+\item{cross_corr_threshold}{Numeric or NULL. Cutoff applied to cross-layer
+entity correlations when building the integrated edge list. NULL (default)
+selects it automatically as the cutoff with the highest mixture score;
+supply a number to pin it, e.g. to reproduce a published analysis.}
+
+\item{cross_corr_scan_n}{Integer; number of cutoffs scanned by
+\code{find_cross_corr_cutoff()}.}
+
+\item{cross_corr_scan_min}{Numeric; lower bound of that scan.}
 }
 \value{
 A list with the main objects produced by the pipeline:

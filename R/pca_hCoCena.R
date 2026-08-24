@@ -175,7 +175,7 @@ reset_regrouping <- function(reset = "no", sets_to_reset, algo, gtc = NULL){
       layer_specific_outputs[[paste0("set",x)]][["part2"]] <<- run_expression_analysis_2(x, grouping_v = NULL, 
                                                                                              plot_HM = T)
     }
-    integrated_output$GFC_all_layers <<- merge_GFCs(GFC_when_not_expressed = -global_settings$range_GFC)
+    integrated_output$GFC_all_layers <<- merge_GFCs()
     if(!is.null(gtc)){
       integrated_output$cluster_calc$cluster_information <<- update_clustering_algorithm(alluvials = integrated_output$alluvials, new_algo = algo, gtc = gtc)
     }else{

@@ -1,7 +1,6 @@
 #' @import biomaRt
 #' @import bnstruct
 #' @import BSgenome
-#' @import Cairo
 #' @import circlize
 #' @import cluster
 #' @import clusterProfiler
