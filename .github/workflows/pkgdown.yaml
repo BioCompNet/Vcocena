@@ -8,6 +8,11 @@ on:
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
+    # The deploy step force-pushes the built site to gh-pages. Without this the
+    # default GITHUB_TOKEN is read-only and the push fails with
+    # "Write access to repository not granted" / HTTP 403.
+    permissions:
+      contents: write
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
