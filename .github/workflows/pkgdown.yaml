@@ -22,8 +22,14 @@ jobs:
           extra-repositories: 'https://packagemanager.posit.co/cran/2025-11-01'
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          # local::. installs vcocena itself. setup-r-dependencies installs only
+          # dependencies, and build_site_github_pages(install = FALSE) expects
+          # the package to be there already -- without this it fails at
+          # library(vcocena). test-coverage escapes this because covr installs
+          # the package itself.
           extra-packages: |
             any::pkgdown
+            local::.
           needs: website
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
