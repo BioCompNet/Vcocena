@@ -17,20 +17,20 @@ of modules.
 
 ## Install
 
-Two dependencies are **no longer on CRAN** and must be installed from the archive
-first. Both are used on the main execution path, so installation fails without them.
-
 ```r
 # install.packages("remotes")
-remotes::install_url("https://cran.r-project.org/src/contrib/Archive/glpkAPI/glpkAPI_1.3.4.1.tar.gz")
-remotes::install_url("https://cran.r-project.org/src/contrib/Archive/MCDA/MCDA_0.1.0.tar.gz")
-
 remotes::install_github("BioCompNet/Vcocena")
 ```
 
-`glpkAPI` needs the GLPK C library (`libglpk-dev` on Debian/Ubuntu, `brew install glpk`
-on macOS). The remaining Bioconductor dependencies install normally via
-`BiocManager::install()`.
+Two dependencies are **no longer on CRAN** — `MCDA` (archived 2025-11-20) and its
+dependency `glpkAPI` (archived 2026-03-20). Both are used on the main execution path,
+so they cannot be skipped. `DESCRIPTION` carries a `Remotes:` field pointing at the
+CRAN archive, so `install_github()` and `pak` pick them up automatically; no manual
+step is needed.
+
+`glpkAPI` compiles against the GLPK C library — `libglpk-dev` on Debian/Ubuntu,
+`brew install glpk` on macOS. The remaining Bioconductor dependencies install normally
+via `BiocManager::install()`.
 
 Do **not** call `install_bioconductor_packages()` from this package — it still lists
 `pcaGoPromoter`, which was removed from Bioconductor in release 3.12.
