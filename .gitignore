@@ -2,3 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# Generated pipeline output
+inst/extdata/example_vertical/out_*/
+out_docker*/
+out_paper/

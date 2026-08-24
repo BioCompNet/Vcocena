@@ -1,0 +1,32 @@
+# Build context is the package repository root.
+
+# Generated pipeline output -- never needed in the image
+**/out_v1
+**/out_smoke
+**/out_paper
+**/out_docker*
+**/out_stepwise
+**/out_example
+**/dir_DegreeDistribution_*
+**/sample_distribution_plots
+Rplots.pdf
+
+# R workspaces and session cruft
+*.RData
+**/*.RData
+.Rhistory
+**/.Rhistory
+.Rproj.user
+**/*.Rproj
+
+# Repo metadata not needed at build time
+.git
+.github
+docs
+pkgdown
+man
+vignettes
+
+# OS cruft
+.DS_Store
+**/.DS_Store
