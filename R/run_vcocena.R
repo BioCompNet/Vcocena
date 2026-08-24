@@ -40,6 +40,28 @@
 #' @param anno_has_rn Logical; does the annotation file already have row
 #'   names?
 #'
+#' @param voi Character; the "variable of interest" column in the annotation
+#'   tables used to define groups for Group Fold Change calculation.
+#' @param control Character; name of the control group, or "none".
+#' @param organism Character; organism name used by downstream enrichment.
+#' @param min_nodes_number_for_cluster Integer; minimum cluster size to retain.
+#' @param min_nodes_number_for_network Integer; minimum connected-component
+#'   size counted as a "network" when scoring correlation cutoffs. Previously
+#'   unset, which made the network count always zero and silently degraded
+#'   automatic cutoff selection; 40 matches the original pipeline default.
+#' @param data_in_log Logical; is the input already log-transformed? Set TRUE
+#'   for rlog/VST/log2 data, otherwise Group Fold Changes will be wrong.
+#' @param range_GFC Numeric; Group Fold Changes are clamped to +/- this value.
+#' @param identicals_min_corr Numeric; minimum cluster-to-cluster correlation
+#'   for two clusters in different layers to be treated as "identical".
+#' @param cross_corr_threshold Numeric or NULL. Cutoff applied to cross-layer
+#'   entity correlations when building the integrated edge list. NULL (default)
+#'   selects it automatically as the cutoff with the highest mixture score;
+#'   supply a number to pin it, e.g. to reproduce a published analysis.
+#' @param cross_corr_scan_n Integer; number of cutoffs scanned by
+#'   \code{find_cross_corr_cutoff()}.
+#' @param cross_corr_scan_min Numeric; lower bound of that scan.
+#'
 #' @return A list with the main objects produced by the pipeline:
 #'   \itemize{
 #'     \item \code{global_settings}
@@ -67,7 +89,18 @@ run_vcocena <- function(
   gene_symbol_col = "SYMBOL",
   sample_col = "ID",
   count_has_rn = FALSE,
-  anno_has_rn = FALSE
+  anno_has_rn = FALSE,
+  voi = "Condition",
+  control = "none",
+  organism = "human",
+  min_nodes_number_for_cluster = 3,
+  min_nodes_number_for_network = 40,
+  data_in_log = FALSE,
+  range_GFC = 3,
+  identicals_min_corr = 0.8,
+  cross_corr_threshold = NULL,
+  cross_corr_scan_n = 50,
+  cross_corr_scan_min = 0.8
 ) {
   if (length(layers) != length(layers_names)) {
     stop("`layers` and `layers_names` must have the same length.")
@@ -97,16 +130,18 @@ run_vcocena <- function(
   assign("supplement", supplement, envir = pkg_env)
   assign("layers_names", layers_names, envir = pkg_env)
 
-  # Global settings (minimal initialization here; you can enrich this list
-  # as needed, e.g. by adding organism, voi, control, etc.).
+  # Global settings, driven by the corresponding function arguments.
   global_settings <- list()
   global_settings[["save_folder"]] <- init_save_folder(name = save_folder)
-  global_settings[["voi"]] <- "Condition"
-  global_settings[["control"]] <- "none"
-  global_settings[["organism"]] <- "human"
-  global_settings[["min_nodes_number_for_cluster"]] <- 3
-  global_settings[["data_in_log"]] <- FALSE
-  global_settings[["range_GFC"]] <- 3
+  global_settings[["voi"]] <- voi
+  global_settings[["control"]] <- control
+  global_settings[["organism"]] <- organism
+  global_settings[["min_nodes_number_for_cluster"]] <- min_nodes_number_for_cluster
+  # Read by cutoff_prep() via `global_set$min_nodes_number_for_network`; if it
+  # is absent the component count collapses to 0 for every cutoff tested.
+  global_settings[["min_nodes_number_for_network"]] <- min_nodes_number_for_network
+  global_settings[["data_in_log"]] <- data_in_log
+  global_settings[["range_GFC"]] <- range_GFC
   assign("global_settings", global_settings, envir = pkg_env)
 
   # Layer-specific settings
@@ -173,26 +208,67 @@ run_vcocena <- function(
   assign("integrated_output", integrated_output, envir = pkg_env)
 
   integrated_output[["all_cluster_corrs"]] <- find_all_cluster_corrs()
-  integrated_output[["identicals"]] <- ids(min_corr = 0.8)
+  assign("integrated_output", integrated_output, envir = pkg_env)
 
-  integrated_output[["cross_corr_cutoff_stats"]] <- find_cross_corr_cutoff(
-    n = 50,
-    threshold = 0.8
+  integrated_output[["identicals"]] <- ids(
+    crosscorrlist = integrated_output[["all_cluster_corrs"]],
+    min_corr = identicals_min_corr
   )
+  assign("integrated_output", integrated_output, envir = pkg_env)
 
-  # Choose a cross-layer correlation cutoff based on the highest mixture score
-  best_idx <- which.max(integrated_output[["cross_corr_cutoff_stats"]]$mix_score)
-  cross_threshold <- as.numeric(
-    integrated_output[["cross_corr_cutoff_stats"]]$cutoff[best_idx]
-  )
+  if (length(integrated_output[["identicals"]]) == 0) {
+    warning("No cross-layer cluster pairs above min_corr; proceeding without cross-layer edges.")
+    integrated_output[["cross_corr_cutoff_stats"]] <- data.frame(
+      mix_score = numeric(),
+      cutoff = character(),
+      num_clusters = integer(),
+      num_cross_edges = integer(),
+      stringsAsFactors = FALSE
+    )
+    integrated_output[["cross_correlations"]] <- data.frame(
+      V1 = character(),
+      V2 = character(),
+      weight = numeric(),
+      stringsAsFactors = FALSE
+    )
+    integrated_output[["integrated_edgelist"]] <- get_layer_edgelists()
+  } else {
+    integrated_output[["cross_corr_cutoff_stats"]] <- find_cross_corr_cutoff(
+      n = cross_corr_scan_n,
+      threshold = cross_corr_scan_min
+    )
+    assign("integrated_output", integrated_output, envir = pkg_env)
 
-  integrated_output[["cross_correlations"]] <- cross_corrs(
-    threshold = cross_threshold
-  )
+    if (nrow(integrated_output[["cross_corr_cutoff_stats"]]) == 0) {
+      warning("Cross-correlation cutoff stats are empty; proceeding without cross-layer edges.")
+      integrated_output[["cross_correlations"]] <- data.frame(
+        V1 = character(),
+        V2 = character(),
+        weight = numeric(),
+        stringsAsFactors = FALSE
+      )
+      integrated_output[["integrated_edgelist"]] <- get_layer_edgelists()
+    } else {
+      # Use the pinned cutoff when supplied, otherwise the highest mixture score.
+      if (is.null(cross_corr_threshold)) {
+        best_idx <- which.max(integrated_output[["cross_corr_cutoff_stats"]]$mix_score)
+        cross_threshold <- as.numeric(
+          integrated_output[["cross_corr_cutoff_stats"]]$cutoff[best_idx]
+        )
+      } else {
+        cross_threshold <- as.numeric(cross_corr_threshold)
+      }
 
-  integrated_output[["integrated_edgelist"]] <- create_integrated_edgelist(
-    el = integrated_output[["cross_correlations"]]
-  )
+      integrated_output[["cross_correlations"]] <- cross_corrs(
+        threshold = cross_threshold
+      )
+
+      integrated_output[["integrated_edgelist"]] <- create_integrated_edgelist(
+        el = integrated_output[["cross_correlations"]]
+      )
+    }
+  }
+  assign("integrated_output", integrated_output, envir = pkg_env)
 
   merged_net <- igraph::graph_from_data_frame(
     integrated_output[["integrated_edgelist"]],

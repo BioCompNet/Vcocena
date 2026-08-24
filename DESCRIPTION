@@ -9,7 +9,6 @@ Description: Tools for running the vertical CoCena2 multi-omics pipeline,
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports:
     biomaRt,
     bnstruct,
@@ -27,10 +26,14 @@ Imports:
     ggnetwork,
     ggplot2,
     ggsci,
+    grid,
+    gtools,
+    Hmisc,
     httr,
     igraph,
     intergraph,
     jsonlite,
+    knitr,
     lineup,
     magrittr,
     MCDA,
@@ -48,16 +51,17 @@ Imports:
     STRINGdb,
     stringi,
     stringr,
+    tibble,
     tidyr,
     tidyverse,
     wesanderson
 Suggests:
     covr,
     devtools,
-    knitr,
     pkgdown,
     rcmdcheck,
     rmarkdown,
     testthat
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

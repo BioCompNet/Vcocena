@@ -20,7 +20,15 @@ run_vcocena(
   gene_symbol_col = "SYMBOL",
   sample_col = "ID",
   count_has_rn = FALSE,
-  anno_has_rn = FALSE
+  anno_has_rn = FALSE,
+  voi = "Condition",
+  control = "none",
+  organism = "human",
+  min_nodes_number_for_cluster = 3,
+  min_nodes_number_for_network = 40,
+  data_in_log = FALSE,
+  range_GFC = 3,
+  identicals_min_corr = 0.8
 )
 }
 \arguments{
@@ -72,6 +80,28 @@ IDs.}
 
 \item{anno_has_rn}{Logical; does the annotation file already have row
 names?}
+
+\item{voi}{Character; the "variable of interest" column in the annotation
+tables used to define groups for Group Fold Change calculation.}
+
+\item{control}{Character; name of the control group, or "none".}
+
+\item{organism}{Character; organism name used by downstream enrichment.}
+
+\item{min_nodes_number_for_cluster}{Integer; minimum cluster size to retain.}
+
+\item{min_nodes_number_for_network}{Integer; minimum connected-component
+size counted as a "network" when scoring correlation cutoffs. Previously
+unset, which made the network count always zero and silently degraded
+automatic cutoff selection; 40 matches the original pipeline default.}
+
+\item{data_in_log}{Logical; is the input already log-transformed? Set TRUE
+for rlog/VST/log2 data, otherwise Group Fold Changes will be wrong.}
+
+\item{range_GFC}{Numeric; Group Fold Changes are clamped to +/- this value.}
+
+\item{identicals_min_corr}{Numeric; minimum cluster-to-cluster correlation
+for two clusters in different layers to be treated as "identical".}
 }
 \value{
 A list with the main objects produced by the pipeline:

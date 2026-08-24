@@ -84,7 +84,7 @@ heatmap_top_var <- function(info_dataset, global_settings,
   }
   
   output[["heatmap"]] <- heatmap_filtered_counts
-  ggsave(filename = paste0("Heatmap_topvar_genes",x,".pdf"), plot = heatmap_filtered_counts, device = cairo_pdf,
+  ggsave(filename = paste0("Heatmap_topvar_genes",x,".pdf"), plot = heatmap_filtered_counts$gtable, device = cairo_pdf,
          path = paste0(working_directory,global_settings$save_folder), width = 7, height = 10, units = "in", limitsize = F)
   return(output)
 }

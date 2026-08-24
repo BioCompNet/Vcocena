@@ -310,12 +310,26 @@ cross_corr_pair<- function(set1, set2, c1, c2){
 
 calculate_cross_corrs_identity <- function(threshold = 0.7, n = 100){
   
+  if (length(integrated_output$identicals) == 0) {
+    return(list())
+  }
+  
   cross_corrs <- NULL
   
-  for(i in 1:length(integrated_output$identicals)){
-    sets <- base::strsplit(names(integrated_output$identicals)[i], split = "_")%>%
+  for(i in seq_len(length(integrated_output$identicals))){
+    nm <- names(integrated_output$identicals)[i]
+    if (is.null(nm) || is.na(nm) || !nzchar(nm)) {
+      next
+    }
+    sets <- base::strsplit(nm, split = "_")%>%
       unlist()
-    cross_corrs <- rbind(cross_corrs, apply(integrated_output$identicals[[i]], 1, function(x){
+    if (length(sets) < 2) {
+      next
+    }
+    if (is.null(integrated_output$identicals[[i]]) || nrow(integrated_output$identicals[[i]]) == 0) {
+      next
+    }
+    cross_corrs <- c(cross_corrs, apply(integrated_output$identicals[[i]], 1, function(x){
                                             cross_corr_pair(set1 = sets[1], set2 = sets[2],
                                                             c1 = x[1], c2 = x[2])
                                       }))
@@ -325,7 +339,15 @@ calculate_cross_corrs_identity <- function(threshold = 0.7, n = 100){
   #new:
   cross_corrs <- dplyr::bind_rows(cross_corrs)
   
-  cutoff_sequence <- seq(from = threshold, to = max(cross_corrs$value), length.out = n) %>%
+  if (is.null(cross_corrs) || nrow(cross_corrs) == 0 || !("value" %in% colnames(cross_corrs))) {
+    return(list())
+  }
+  max_val <- max(cross_corrs$value, na.rm = TRUE)
+  if (!is.finite(max_val)) {
+    return(list())
+  }
+  
+  cutoff_sequence <- seq(from = threshold, to = max_val, length.out = n) %>%
     round(., digits = 3)%>%
     unique()
   
@@ -349,19 +371,36 @@ calculate_cross_corrs_identity <- function(threshold = 0.7, n = 100){
 
 
 cross_corrs <- function(threshold){
+  if (length(integrated_output$identicals) == 0) {
+    return(data.frame(V1 = character(), V2 = character(), weight = numeric()))
+  }
+  
   cross_corrs <- NULL
   
-  for(i in 1:length(integrated_output$identicals)){
-    sets <- base::strsplit(names(integrated_output$identicals)[i], split = "_")%>%
+  for(i in seq_len(length(integrated_output$identicals))){
+    nm <- names(integrated_output$identicals)[i]
+    if (is.null(nm) || is.na(nm) || !nzchar(nm)) {
+      next
+    }
+    sets <- base::strsplit(nm, split = "_")%>%
       unlist()
-    cross_corrs <- rbind(cross_corrs, apply(integrated_output$identicals[[i]], 1, function(x){
+    if (length(sets) < 2) {
+      next
+    }
+    if (is.null(integrated_output$identicals[[i]]) || nrow(integrated_output$identicals[[i]]) == 0) {
+      next
+    }
+    cross_corrs <- c(cross_corrs, apply(integrated_output$identicals[[i]], 1, function(x){
       cross_corr_pair(set1 = sets[1], set2 = sets[2],
                       c1 = x[1], c2 = x[2])
     }))
   }
   
-  cross_corrs <- dplyr::bind_rows(cross_corrs)%>%
-    dplyr::filter(., value >= threshold)
+  cross_corrs <- dplyr::bind_rows(cross_corrs)
+  if (is.null(cross_corrs) || nrow(cross_corrs) == 0 || !("value" %in% colnames(cross_corrs))) {
+    return(data.frame(V1 = character(), V2 = character(), weight = numeric()))
+  }
+  cross_corrs <- dplyr::filter(cross_corrs, value >= threshold)
 
   colnames(cross_corrs) <- c("V1", "V2", "weight")
   
@@ -372,16 +411,32 @@ cross_corrs <- function(threshold){
 
 calculate_cross_corrs_zero_sums <- function(threshold =  -0.7){
   cross_corrs <- NULL 
-  for( i in 1:length(integrated_output$zero_sums)){
-    sets <- base::strsplit(names(integrated_output$identicals)[i], split = "_")%>%
+  if (length(integrated_output$zero_sums) == 0) {
+    return(data.frame(V1 = character(), V2 = character(), weight = numeric()))
+  }
+  for( i in seq_len(length(integrated_output$zero_sums))){
+    nm <- names(integrated_output$zero_sums)[i]
+    if (is.null(nm) || is.na(nm) || !nzchar(nm)) {
+      next
+    }
+    sets <- base::strsplit(nm, split = "_")%>%
       unlist()
-    cross_corrs <- rbind(cross_corrs, apply(integrated_output$zero_sums[[i]], 1, function(x){
+    if (length(sets) < 2) {
+      next
+    }
+    if (is.null(integrated_output$zero_sums[[i]]) || nrow(integrated_output$zero_sums[[i]]) == 0) {
+      next
+    }
+    cross_corrs <- c(cross_corrs, apply(integrated_output$zero_sums[[i]], 1, function(x){
       cross_corr_pair(set1 = sets[1], set2 = sets[2],
                       c1 = x[1], c2 = x[2])
     }))
   }
-  cross_corrs <- dplyr::bind_rows(cross_corrs)%>%
-    dplyr::filter(., value <= threshold)
+  cross_corrs <- dplyr::bind_rows(cross_corrs)
+  if (is.null(cross_corrs) || nrow(cross_corrs) == 0 || !("value" %in% colnames(cross_corrs))) {
+    return(data.frame(V1 = character(), V2 = character(), weight = numeric()))
+  }
+  cross_corrs <- dplyr::filter(cross_corrs, value <= threshold)
   
   colnames(cross_corrs) <- c("V1", "V2", "weight")
   cross_corrs$weight <- abs(cross_corrs$weight)
@@ -482,6 +537,10 @@ create_integrated_edgelist <- function(el){
   integrated_edgelist <- get_layer_edgelists()
   #integrated_edgelist <- rbind(pheno_edgelist, layer_edgelist)
   cross_edgelist <- el
+  
+  if (is.null(cross_edgelist) || nrow(cross_edgelist) == 0) {
+    return(integrated_edgelist)
+  }
   
   rescale_min <- min(edge_attr(layer_specific_outputs[[1]]$network)[[1]])
   rescale_max <- max(edge_attr(layer_specific_outputs[[1]]$network)[[1]])
