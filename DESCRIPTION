@@ -9,9 +9,6 @@ Description: Tools for running the vertical CoCena2 multi-omics pipeline,
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Remotes:
-    glpkAPI=url::https://cran.r-project.org/src/contrib/Archive/glpkAPI/glpkAPI_1.3.4.1.tar.gz,
-    MCDA=url::https://cran.r-project.org/src/contrib/Archive/MCDA/MCDA_0.1.0.tar.gz
 Imports:
     biomaRt,
     bnstruct,

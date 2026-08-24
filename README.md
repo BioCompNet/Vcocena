@@ -17,16 +17,24 @@ of modules.
 
 ## Install
 
+Two dependencies are **no longer on CRAN** — `MCDA` (archived 2025-11-20) and its
+dependency `glpkAPI` (archived 2026-03-20). Both sit on the main execution path, so
+they cannot be skipped. Add a dated repository snapshot from before the archivals and
+they resolve as ordinary packages:
+
 ```r
+options(repos = c(
+  CRAN     = "https://cloud.r-project.org",
+  snapshot = "https://packagemanager.posit.co/cran/2025-11-01"
+))
+
 # install.packages("remotes")
 remotes::install_github("BioCompNet/Vcocena")
 ```
 
-Two dependencies are **no longer on CRAN** — `MCDA` (archived 2025-11-20) and its
-dependency `glpkAPI` (archived 2026-03-20). Both are used on the main execution path,
-so they cannot be skipped. `DESCRIPTION` carries a `Remotes:` field pointing at the
-CRAN archive, so `install_github()` and `pak` pick them up automatically; no manual
-step is needed.
+The snapshot is a *secondary* repository: R takes the highest available version of
+each package, so everything else still comes from current CRAN and only the two
+archived packages come from the snapshot.
 
 `glpkAPI` compiles against the GLPK C library — `libglpk-dev` on Debian/Ubuntu,
 `brew install glpk` on macOS. The remaining Bioconductor dependencies install normally
